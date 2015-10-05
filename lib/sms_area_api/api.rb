@@ -17,8 +17,15 @@ module SmsAreaApi
       if response =~ /ACCESS_NUMBER:/
         data = response.split(':')
         return {
+          state: data[0],
           id: data[1],
           access_number: data[2]
+        }
+      elsif response =~ /STATUS_OK:/
+        data = response.split(':')
+        return {
+          state: data[0],
+          code: data[1]
         }
       else
         return response
