@@ -6,39 +6,39 @@ module SmsAreaApi
       self.api_key = api_key
     end
 
-    def request(action, params)
-      request_params = {
-        action: action,
-        api_key: api_key
-      }.merge(params)
+    def request(params)
+      params[:api_key] = api_key
+      response = RestClient.post 'http://sms-area.org/stubs/handler_api.php', params
+      data = response.split(':')
+      state = data.first
 
-      response = RestClient.post 'http://sms-area.org/stubs/handler_api.php', request_params
-
-      if response =~ /ACCESS_NUMBER:/
-        data = response.split(':')
+      case state
+      when 'ACCESS_NUMBER'
         return {
-          state: data[0],
+          state: state,
           id: data[1],
           access_number: data[2]
         }
-      elsif response =~ /STATUS_OK:/
-        data = response.split(':')
+      when 'STATUS_OK', 'STATUS_ACCESS', 'STATUS_ACCESS_SCREEN'
         return {
-          state: data[0],
+          state: state,
           code: data[1]
         }
+      when 'ACCESS_BALANCE'
+        return {
+          state: state,
+          balance: data[1]
+        }
       else
-        return response
+        return {
+          state: state
+        }
       end
     end
 
-    def method_missing(method, **args)  
-      request(method.to_s.camelize, args)
-    end
-
-
-    def self.start
-   
+    def method_missing(method, **args)
+      args[:action] = method.to_s.camelize
+      request(args)
     end
   end
 end
