@@ -1,6 +1,7 @@
 # SmsAreaApi
 
-TODO: Write a gem description
+A Ruby wrapper for sms-area.org API. 
+Documentation for API is here: http://sms-area.org/api.txt
 
 ## Installation
 
@@ -20,7 +21,18 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+``` ruby
+# create a client
+sms_area = SmsAreaApi::Client.new('1111111111111111111111')
+
+# use snake_case instead of camelCase
+sms_area.get_balance
+# => {:state=>"ACCESS_BALANCE", :balance=>"26.5"}
+
+# request a number
+number = sms_area.get_number country: 'or', service: 'gm', count: 1
+# => {:state=>"ACCESS_NUMBER", :id=>"111111", :access_number=>"12223334444"}
+```
 
 ## Contributing
 
