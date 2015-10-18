@@ -1,14 +1,24 @@
 module SmsAreaApi
   class Client
-    attr_accessor :api_key
+    attr_accessor :api_key, :service
 
-    def initialize(api_key)
+    @@service_endpoints = {
+      'sms_area' => 'http://sms-area.org/stubs/handler_api.php',
+      'sms_activate' => 'http://sms-activate.ru/stubs/handler_api.php'
+    }
+
+    def initialize(api_key, service = 'sms_area')
       self.api_key = api_key
+      self.service = service
+    end
+
+    def service_endpoint
+      @@service_endpoints[service]
     end
 
     def request(params)
       params[:api_key] = api_key
-      response = RestClient.post 'http://sms-area.org/stubs/handler_api.php', params
+      response = RestClient.post self.service_endpoint, params
       data = response.split(':')
       state = data.first
 
