@@ -20,9 +20,9 @@ module SmsAreaApi
       params[:api_key] = api_key
       response = RestClient.post self.service_endpoint, params
 
-      if params[:action] = 'getNumbersStatus'
+      if params[:action] == 'getNumbersStatus'
         return JSON.parse(response)
-        
+
       else
         data = response.split(':')
         state = data.first
