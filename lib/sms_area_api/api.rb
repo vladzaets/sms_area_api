@@ -19,30 +19,36 @@ module SmsAreaApi
     def request(params)
       params[:api_key] = api_key
       response = RestClient.post self.service_endpoint, params
-      data = response.split(':')
-      state = data.first
 
-      case state
-      when 'ACCESS_NUMBER'
-        return {
-          state: state,
-          id: data[1],
-          access_number: data[2]
-        }
-      when 'STATUS_OK', 'STATUS_ACCESS', 'STATUS_ACCESS_SCREEN'
-        return {
-          state: state,
-          code: data[1]
-        }
-      when 'ACCESS_BALANCE'
-        return {
-          state: state,
-          balance: data[1]
-        }
+      if params[:action] = 'getNumbersStatus'
+        return JSON.parse(response)
+        
       else
-        return {
-          state: state
-        }
+        data = response.split(':')
+        state = data.first
+
+        case state
+        when 'ACCESS_NUMBER'
+          return {
+            state: state,
+            id: data[1],
+            access_number: data[2]
+          }
+        when 'STATUS_OK', 'STATUS_ACCESS', 'STATUS_ACCESS_SCREEN'
+          return {
+            state: state,
+            code: data[1]
+          }
+        when 'ACCESS_BALANCE'
+          return {
+            state: state,
+            balance: data[1]
+          }
+        else
+          return {
+            state: state
+          }
+        end
       end
     end
 
